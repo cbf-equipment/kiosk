@@ -90,7 +90,7 @@ const todayStr = () => new Date().toISOString().slice(0,10);
 const nowStr   = () => new Date().toTimeString().slice(0,5);
 const toKoDate = () => new Date().toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric",weekday:"short"});
 const diffMins = (sd,st,ed,et) => { if(!sd||!st||!ed||!et) return 0; const d=Math.round((new Date(`${ed}T${et}`)-new Date(`${sd}T${st}`))/60000); return d>0?d:0; };
-const diffDays = (sd,ed) => { if(!sd||!ed) return 0; const d=Math.ceil((new Date(ed)-new Date(sd))/86400000); return d>0?d:0; };
+const diffDays = (sd,ed) => { if(!sd||!ed) return 0; const d=Math.round((new Date(ed)-new Date(sd))/86400000)+1; return d>0?d:0; };
 const calcFee  = (eq,mins,days,qty) => {
   if(!eq) return 0;
   let base=0;
