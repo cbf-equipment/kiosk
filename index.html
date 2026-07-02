@@ -245,6 +245,7 @@ function RecordsQueryPage({onBack}){
         {COMPANIES.map(c=><option key={c} value={c}>{c}</option>)}
       </select>
       {co==="직접입력"&&<AutoComplete value={cu} onChange={v=>{setCu(v);setSearched(false);setRecords([]);}} suggestions={COMPANIES}/>}
+      <div style={{height:4}}/>
       <button onClick={search} disabled={!cn||loading} style={{width:"100%",padding:"13px",background:cn&&!loading?"#2563eb":"#e2e8f0",color:cn&&!loading?"#fff":"#94a3b8",border:"none",borderRadius:10,fontSize:14,fontWeight:600,cursor:cn&&!loading?"pointer":"not-allowed",marginBottom:16}}>
         {loading?"조회 중...":"조회하기"}
       </button>
