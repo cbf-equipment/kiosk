@@ -208,7 +208,36 @@ function RecordsQueryPage({onBack}){
     document.body.appendChild(s);
   };
 
-  const total=records.filter(r=>r.구분!=="예약"&&r.장비사용료&&r.장비사용료!=="미정").reduce((s,r)=>s+(parseInt(r.장비사용료)||0),0);
+  const formatDate = (s) => {
+    if (!s || s === "미정") return s;
+    // "Mon Jun 29 2026..." 형태 처리
+    if (s.includes("GMT") || s.includes("표준시")) {
+      const d = new Date(s);
+      if (!isNaN(d.getTime())) {
+        return `${d.getMonth()+1}월 ${d.getDate()}일`;
+      }
+    }
+    // "2026-06-29" 형태
+    if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+      const p = s.slice(0,10).split("-");
+      return `${parseInt(p[1])}월 ${parseInt(p[2])}일`;
+    }
+    return s;
+  };
+
+  const formatTime = (s) => {
+    if (!s) return "";
+    // "Sat Dec 30 1899 11:15:00 GMT+0827..." 형태
+    if (s.includes("GMT") || s.includes("표준시")) {
+      const d = new Date(s);
+      if (!isNaN(d.getTime())) {
+        return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+      }
+    }
+    return s.slice(0,5);
+  };
+
+  const total=records.filter(r=>r.구분!=="예약"&&r.장비사용료&&r.장비사용료!=="미정").reduce((s,r)=>s+Math.floor((parseInt(r.장비사용료)||0)/10)*10,0);
 
   return(
     <div>
@@ -232,19 +261,22 @@ function RecordsQueryPage({onBack}){
           <div style={{maxHeight:380,overflowY:"auto",marginBottom:12}}>
             {records.map((r,i)=>(
               <div key={i} style={{background:"#f8fafc",borderRadius:10,padding:"12px 14px",marginBottom:8,border:"1px solid #e2e8f0"}}>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
                   <span style={{color:"#0f172a",fontWeight:600,fontSize:13}}>{r.장비명}</span>
                   <span style={{color:r.구분==="예약"?"#0284c7":"#2563eb",fontWeight:700,fontSize:13}}>
                     {r.구분==="예약"?"예약":r.장비사용료==="미정"?"미정":`${parseInt(r.장비사용료).toLocaleString()}원`}
                   </span>
                 </div>
-                <div style={{color:"#64748b",fontSize:11}}>
-                  {r.사용시작일&&<span>{r.사용시작일} </span>}
-                  {r.시작시간&&<span>{r.시작시간}</span>}
-                  {(r.사용시작일||r.시작시간)&&<span> ~ </span>}
-                  {r.사용종료일&&<span>{r.사용종료일} </span>}
-                  {r.종료시간&&<span>{r.종료시간}</span>}
-                  {r.사용일수&&<span> ({r.사용일수}일)</span>}
+                <div style={{color:"#64748b",fontSize:12}}>
+                  {(() => {
+                    const sd=formatDate(r.사용시작일), st=formatTime(r.시작시간);
+                    const ed=formatDate(r.사용종료일), et=formatTime(r.종료시간);
+                    const days=r.사용일수;
+                    if (sd && st && ed && et) return `${sd} ${st} ~ ${ed} ${et}${days?" ("+days+"일)":""}`;
+                    if (sd && st) return `${sd} ${st} ~`;
+                    if (st && et) return `${st} ~ ${et}`;
+                    return "";
+                  })()}
                 </div>
                 {r.사용량&&<div style={{color:"#94a3b8",fontSize:11,marginTop:2}}>사용량: {r.사용량}</div>}
               </div>
