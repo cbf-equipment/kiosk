@@ -28,7 +28,6 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyfgK-mb675fKyAOzWPt
 
 const EQUIPMENT = [
   { name:"회전농축기-4",              code:"12CBF-12D3A3201",  fee:550,   unit:"Hour", type:"short" },
-  { name:"회전배양기",                code:"98B24-01D3A3806",  fee:400,   unit:"Hour", type:"short" },
   { name:"실시간중합효소연쇄반응기-2", code:"08A19-11D3A3102",  fee:2450,  unit:"Hour", type:"short" },
   { name:"화학발광이미지분석장치-2",   code:"08A19-09D3A2607",  fee:2260,  unit:"Hour", type:"short" },
   { name:"효소면역측정기-4",           code:"08A19-09D3A2501",  fee:2960,  unit:"Hour", type:"short" },
@@ -46,6 +45,7 @@ const EQUIPMENT = [
   { name:"입도분석기",                 code:"02A19-06D3A3106",  fee:2160,  unit:"Hour", type:"short" },
   { name:"피부측정통합장치",           code:"02A19-03D3A2701",  fee:3430,  unit:"Hour", type:"short" },
   { name:"원적외선건조기",             code:"98B24-01D3A1315",  fee:12450, unit:"Day",  type:"short" },
+  { name:"회전배양기",                code:"98B24-01D3A3806",  fee:400,   unit:"Hour", type:"long" },
   { name:"가스크로마토그래프-4",       code:"08A19-10D3A3202",  fee:2360,  unit:"Hour", type:"long" },
   { name:"대형회전증발농축기",         code:"98B24-99D3A1925",  fee:54000, unit:"Day",  type:"long" },
   { name:"고속액체크로마토그래프-11",  code:"15CBF-15D3A2201",  fee:5500,  unit:"Hour", type:"long" },
@@ -404,7 +404,7 @@ function App(){
                 {filtered.map(e=>(
                   <button key={e.code} onClick={()=>{setEq(e);setEndOnly(false);setStep("form");}} style={{padding:"12px 10px",borderRadius:12,border:`1.5px solid ${e.type==="long"?"#bae6fd":"#e2e8f0"}`,background:"#fff",color:"#0f172a",cursor:"pointer",textAlign:"left"}}>
                     <div style={{fontSize:12,fontWeight:600,marginBottom:3,lineHeight:1.3}}>{e.name}</div>
-                    <div style={{fontSize:10,color:e.type==="long"?"#0284c7":"#2563eb"}}>{e.type==="long"?"장기사용":e.unit==="L"?`${e.fee.toLocaleString()}원/L`:`${e.fee.toLocaleString()}원/시간`}</div>
+                    <div style={{fontSize:10,color:e.type==="long"?"#0284c7":"#2563eb"}}>{e.type==="long"?`장기사용 · ${e.unit==="L"?`${e.fee.toLocaleString()}원/L`:e.unit==="Day"?`${e.fee.toLocaleString()}원/일`:`${e.fee.toLocaleString()}원/시간`}`:e.unit==="L"?`${e.fee.toLocaleString()}원/L`:`${e.fee.toLocaleString()}원/시간`}</div>
                   </button>
                 ))}
                 {filtered.length===0&&<div style={{color:"#94a3b8",fontSize:13,padding:"20px 0",gridColumn:"1/-1",textAlign:"center"}}>검색 결과 없음</div>}
@@ -414,6 +414,7 @@ function App(){
                   <div key={l} style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:10,height:10,borderRadius:2,border:`1.5px solid ${bc}`}}/><span style={{color:"#64748b",fontSize:11}}>{l}</span></div>
                 ))}
               </div>
+              <InfoBox msg={"※ 표시된 단가는 입주기업 기준입니다.\n외부기업은 단가가 다를 수 있으니 이용 전 담당자에게 문의해주세요."}/>
               <GBtn label="← 뒤로" onClick={()=>setStep("home")}/>
             </div>
           )}
