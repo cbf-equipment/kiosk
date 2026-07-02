@@ -36,7 +36,7 @@ const EQUIPMENT = [
   { name:"마이크로어레이분석장치-4",   code:"08A19-09D3A2609",  fee:4800,  unit:"Hour", type:"short" },
   { name:"고속원심분리기-4",           code:"02A19-03D3A7201",  fee:800,   unit:"Hour", type:"short" },
   { name:"초고속원심분리기-2",         code:"02A19-04D3A6702",  fee:4340,  unit:"Hour", type:"short" },
-  { name:"탁상용 원심분리기-1",        code:"98B24-99D3A2302",  fee:200,   unit:"Hour", type:"short" },
+
   { name:"초순수제조기-2",             code:"02A19-02D3A3701",  fee:500,   unit:"L",    type:"short" },
   { name:"초순수제조장치-3",           code:"02A19-03D3A6711",  fee:550,   unit:"L",    type:"short" },
   { name:"초음파장치",                 code:"98B24-99D3A2503",  fee:250,   unit:"Hour", type:"short" },
@@ -48,13 +48,10 @@ const EQUIPMENT = [
   { name:"피부측정통합장치",           code:"02A19-03D3A2701",  fee:3430,  unit:"Hour", type:"short" },
   { name:"원적외선건조기",             code:"98B24-01D3A1315",  fee:12450, unit:"Day",  type:"short" },
   { name:"대형회전증발농축기",         code:"98B24-99D3A1925",  fee:54000, unit:"Day",  type:"long" },
-  { name:"고압멸균기-9",               code:"08A19-11D3A4901",  fee:270,   unit:"Hour", type:"short" },
-  { name:"도립현미경-1",               code:"98B24-99D3A2507",  fee:230,   unit:"Hour", type:"short" },
-  { name:"자외-가시선분광광도계-7",    code:"02A19-03D3A6704",  fee:320,   unit:"Hour", type:"short" },
+
   // 장기
   { name:"가스크로마토그래프-4",       code:"08A19-10D3A3202",  fee:2360,  unit:"Hour", type:"long" },
-  { name:"고속액체크로마토그래프-5",   code:"02A19-04D3A6704",  fee:5000,  unit:"Hour", type:"long" },
-  { name:"고속액체크로마토그래프-8",   code:"08A19-09D3A2605",  fee:5000,  unit:"Hour", type:"long" },
+
   { name:"고속액체크로마토그래프-11",  code:"15CBF-15D3A2201",  fee:5500,  unit:"Hour", type:"long" },
   { name:"고속액체크로마토그래프-12",  code:"15CBF-17D3A2201",  fee:5500,  unit:"Hour", type:"long" },
   { name:"고속액체크로마토그래프-13",  code:"15CBF-17D3A2202",  fee:5500,  unit:"Hour", type:"long" },
@@ -128,7 +125,7 @@ function AutoComplete({value,onChange,suggestions}){
   const filtered=React.useMemo(()=>value?suggestions.filter(s=>s!=="직접입력"&&s.replace(/[㈜㈔()（）]/g,"").toLowerCase().includes(value.replace(/[㈜㈔()（）]/g,"").toLowerCase())).slice(0,6):[],[value,suggestions]);
   return(
     <div style={{position:"relative",marginBottom:14}}>
-      <input value={value} onChange={e=>{onChange(e.target.value);setShow(true);}} onBlur={()=>setTimeout(()=>setShow(false),150)} onFocus={()=>value&&setShow(true)} placeholder="업체명 입력 (일부만 입력하면 목록 표시)" style={{...IS,marginBottom:0}}/>
+      <input value={value} onChange={e=>{onChange(e.target.value);setShow(true);}} onBlur={()=>setTimeout(()=>setShow(false),150)} onFocus={()=>setShow(true)} placeholder="업체명 입력 (일부만 입력 시 목록 표시)" style={{...IS,marginBottom:0}}/>
       {show&&filtered.length>0&&(
         <div style={{position:"absolute",top:"100%",left:0,right:0,background:"#fff",border:"1.5px solid #94a3b8",borderRadius:10,zIndex:200,boxShadow:"0 4px 16px rgba(0,0,0,0.1)",maxHeight:180,overflowY:"auto"}}>
           {filtered.map(s=>(
