@@ -145,11 +145,7 @@ function AutoComplete({value,onChange,suggestions}){
 function CompanyWorker({co,setCo,cu,setCu,wo,setWo,ph,setPh}){
   return(<>
     <Lbl>업체명</Lbl>
-    <select value={co} onChange={e=>setCo(e.target.value)} style={IS}>
-      <option value="">선택하세요</option>
-      {COMPANIES.map(c=><option key={c} value={c}>{c}</option>)}
-    </select>
-    {co==="직접입력"&&<AutoComplete value={cu} onChange={setCu} suggestions={COMPANIES}/>}
+    <AutoComplete value={cu} onChange={setCu} suggestions={COMPANIES}/>
     <Lbl>담당자명</Lbl>
     <input value={wo} onChange={e=>setWo(e.target.value)} placeholder="성함을 입력하세요" style={IS}/>
     <Lbl>휴대폰 번호</Lbl>
@@ -195,7 +191,7 @@ function RecordsQueryPage({onBack}){
   const [loading,setLoading]=React.useState(false);
   const [searched,setSearched]=React.useState(false);
 
-  const cn=co==="직접입력"?cu:co;
+  const cn=cu;
 
   const search=()=>{
     if(!cn) return;
@@ -358,7 +354,12 @@ function ReservationPage({onBack}){
   return(
     <div>
       <SecT c="📅 고속액체크로마토그래프 장비예약"/>
-      <CompanyWorker co={co} setCo={setCo} cu={cu} setCu={setCu} wo={wo} setWo={setWo} ph={ph} setPh={setPh}/>
+      <Lbl>업체명</Lbl>
+      <AutoComplete value={cu} onChange={setCu} suggestions={COMPANIES}/>
+      <Lbl>담당자명</Lbl>
+      <input value={wo} onChange={e=>setWo(e.target.value)} placeholder="성함을 입력하세요" style={IS}/>
+      <Lbl>휴대폰 번호</Lbl>
+      <input value={ph} onChange={e=>setPh(e.target.value)} placeholder="010-0000-0000" style={IS} type="tel"/>
       <Lbl>장비 선택</Lbl>
       <select value={ec} onChange={e=>{setEc(e.target.value);setSdt(todayStr());setEdt("");}} style={IS}>
         <option value="">선택하세요</option>
