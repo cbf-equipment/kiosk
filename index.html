@@ -156,7 +156,7 @@ function DonePage({onBack,rows}){
     <div style={{textAlign:"center"}}>
       <div style={{width:64,height:64,borderRadius:"50%",background:"#dcfce7",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px",fontSize:28}}>✓</div>
       <div style={{color:"#0f172a",fontSize:18,fontWeight:700,marginBottom:4}}>기록 완료!</div>
-      <div style={{color:"#64748b",fontSize:13,marginBottom:24}}>구글 시트에 저장되었습니다</div>
+      <div style={{color:"#64748b",fontSize:13,marginBottom:24}}>이용 기록이 안전하게 저장되었습니다</div>
       <div style={{background:"#f8fafc",borderRadius:12,padding:16,marginBottom:20,textAlign:"left",border:"1px solid #e2e8f0"}}>
         {rows.map(([l,v])=><Row key={l} l={l} v={v} highlight={l.includes("수수료")}/>)}
       </div>
@@ -489,13 +489,13 @@ function App(){
             </div>
           )}
 
-          {step==="sending"&&<div style={{textAlign:"center",padding:"20px 0"}}><div style={{fontSize:36,marginBottom:16}}>⏳</div><div style={{color:"#0f172a",fontSize:16,fontWeight:600}}>구글 시트에 저장 중...</div></div>}
+          {step==="sending"&&<div style={{textAlign:"center",padding:"20px 0"}}><div style={{fontSize:36,marginBottom:16}}>⏳</div><div style={{color:"#0f172a",fontSize:16,fontWeight:600}}>데이터 입력 중...</div></div>}
 
           {step==="done"&&last&&(
             <div style={{textAlign:"center"}}>
               <div style={{width:64,height:64,borderRadius:"50%",background:"#dcfce7",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px",fontSize:28}}>✓</div>
               <div style={{color:"#0f172a",fontSize:18,fontWeight:700,marginBottom:4}}>기록 완료!</div>
-              <div style={{color:"#64748b",fontSize:13,marginBottom:24}}>구글 시트에 저장되었습니다</div>
+              <div style={{color:"#64748b",fontSize:13,marginBottom:24}}>이용 기록이 안전하게 저장되었습니다</div>
               <div style={{background:"#f8fafc",borderRadius:12,padding:16,marginBottom:20,textAlign:"left",border:"1px solid #e2e8f0"}}>
                 <Row l="업체명" v={last.업체명}/><Row l="장비명" v={dispNameByCode(last.장비코드)||last.장비명}/>
                 <Row l="장비 수수료(부가세 포함)" v={typeof last.수수료==="number"?`${last.수수료.toLocaleString()}원`:"미정"} highlight/>
