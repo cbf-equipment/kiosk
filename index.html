@@ -102,6 +102,7 @@ const calcFee  = (eq,mins,days,qty) => {
 const typeLabel = t=>({short:"단기",long:"장기사용"}[t]||"");
 const dispName = e => e?.label || e?.name || "";
 const dispNameByCode = code => { const f=EQUIPMENT.find(x=>x.code===code); return f?dispName(f):""; };
+const companyForSubmit = c => c==="(재)춘천바이오산업진흥원" ? "CBF" : c;
 const fmtDate = s => { if(!s||s==="미정") return s||""; if(s.includes("GMT")||s.includes("표준시")){const d=new Date(s);if(!isNaN(d.getTime())) return `${d.getMonth()+1}월 ${d.getDate()}일`;} if(/^\d{4}-\d{2}-\d{2}/.test(s)){const p=s.slice(0,10).split("-");return `${parseInt(p[1])}월 ${parseInt(p[2])}일`;} return s; };
 const fmtTime = s => { if(!s) return ""; if(s.includes("GMT")||s.includes("표준시")){const d=new Date(s);if(!isNaN(d.getTime())) return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;} return s.slice(0,5); };
 
@@ -220,7 +221,7 @@ function ReservationPage({onBack}){
     return cells;
   };
   const submit=async()=>{
-    const r={연도:new Date(sdt).getFullYear(),날짜:new Date(sdt).toLocaleDateString("ko-KR"),업체명:cu,담당자:wo,휴대폰:ph,장비명:eq?.name,장비코드:ec,부과단위:"Day",예약시작일:sdt,예약종료일:edt,예약일수:days+"일",구분:"예약"};
+    const r={연도:new Date(sdt).getFullYear(),날짜:new Date(sdt).toLocaleDateString("ko-KR"),업체명:companyForSubmit(cu),담당자:wo,휴대폰:ph,장비명:eq?.name,장비코드:ec,부과단위:"Day",예약시작일:sdt,예약종료일:edt,예약일수:days+"일",구분:"예약"};
     try{await fetch(SCRIPT_URL+"?"+new URLSearchParams(r).toString(),{method:"GET",mode:"no-cors"});}catch(e){}
     setDone(true);
   };
@@ -277,7 +278,7 @@ function RecordsQueryPage({onBack}){
     setLoading(true); setSearched(false);
     const cbName="cb_"+Date.now();
     const s=document.createElement("script");
-    s.src=SCRIPT_URL+"?action=getRecords&업체명="+encodeURIComponent(query)+"&callback="+cbName;
+    s.src=SCRIPT_URL+"?action=getRecords&업체명="+encodeURIComponent(companyForSubmit(query))+"&callback="+cbName;
     window[cbName]=(data)=>{if(data.result==="success") setRecords(data.data||[]); delete window[cbName]; document.body.removeChild(s); setLoading(false); setSearched(true);};
     s.onerror=()=>{setLoading(false);setSearched(true);delete window[cbName];};
     document.body.appendChild(s);
@@ -353,8 +354,8 @@ function App(){
     try{await fetch(SCRIPT_URL+"?"+new URLSearchParams(record).toString(),{method:"GET",mode:"no-cors"});}catch(e){}
     setSubmitting(false); setStep("done");
   };
-  const submitShort=()=>post({연도:new Date().getFullYear(),날짜:new Date().toLocaleDateString("ko-KR"),업체명:cu,담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작일:todayStr(),사용시작시간:sST,사용종료일:todayStr(),사용종료시간:eST,사용시간_분:shMins(),사용량_L:isL?qty:"",단가:eq.fee,수수료:shFee(),구분:"이용"});
-  const submitLong=()=>post({연도:new Date(endOnly?eDate:sDate).getFullYear(),날짜:new Date(endOnly?eDate:sDate).toLocaleDateString("ko-KR"),업체명:cu,담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작일:endOnly?"":sDate,사용시작시간:endOnly?"":sTime,사용종료일:eDate||"미정",사용종료시간:eTime||"미정",사용시간_분:eDate&&eTime?lgMins():"미정",단가:eq.fee,수수료:eDate&&eTime?lgFee():"미정",구분:endOnly?"종료":"이용"});
+  const submitShort=()=>post({연도:new Date().getFullYear(),날짜:new Date().toLocaleDateString("ko-KR"),업체명:companyForSubmit(cu),담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작일:todayStr(),사용시작시간:sST,사용종료일:todayStr(),사용종료시간:eST,사용시간_분:shMins(),사용량_L:isL?qty:"",단가:eq.fee,수수료:shFee(),구분:"이용"});
+  const submitLong=()=>post({연도:new Date(endOnly?eDate:sDate).getFullYear(),날짜:new Date(endOnly?eDate:sDate).toLocaleDateString("ko-KR"),업체명:companyForSubmit(cu),담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작일:endOnly?"":sDate,사용시작시간:endOnly?"":sTime,사용종료일:eDate||"미정",사용종료시간:eTime||"미정",사용시간_분:eDate&&eTime?lgMins():"미정",단가:eq.fee,수수료:eDate&&eTime?lgFee():"미정",구분:endOnly?"종료":"이용"});
   const reset=()=>{setStep("home");setEq(null);setEqSearch("");setCu("");setWo("");setPh("");setSST("");setEST("");setQty("");setSDate(todayStr());setSTime("");setEDate("");setETime("");setEndOnly(false);setSubmitting(false);};
 
   return(
