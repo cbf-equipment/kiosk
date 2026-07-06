@@ -105,6 +105,7 @@ const calcFee  = (eq,mins,days,qty) => {
 const typeLabel = t=>({short:"단기",long:"장기사용"}[t]||"");
 const dispName = e => e?.label || e?.name || "";
 const dispNameByCode = code => { const f=EQUIPMENT.find(x=>x.code===code); return f?dispName(f):""; };
+const dispNameByOrigName = name => { const f=EQUIPMENT.find(x=>x.name===name); return f?dispName(f):(name||""); };
 const companyForSubmit = c => c==="(재)춘천바이오산업진흥원" ? "CBF" : c;
 const fmtDate = s => { if(!s||s==="미정") return s||""; if(s.includes("GMT")||s.includes("표준시")){const d=new Date(s);if(!isNaN(d.getTime())) return `${d.getMonth()+1}월 ${d.getDate()}일`;} if(/^\d{4}-\d{2}-\d{2}/.test(s)){const p=s.slice(0,10).split("-");return `${parseInt(p[1])}월 ${parseInt(p[2])}일`;} return s; };
 const fmtTime = s => { if(!s) return ""; if(s.includes("GMT")||s.includes("표준시")){const d=new Date(s);if(!isNaN(d.getTime())) return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;} return s.slice(0,5); };
@@ -307,7 +308,7 @@ function RecordsQueryPage({onBack}){
             {records.map((r,i)=>(
               <div key={i} style={{background:"#f8fafc",borderRadius:10,padding:"12px 14px",marginBottom:8,border:"1px solid #e2e8f0"}}>
                 <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
-                  <span style={{color:"#0f172a",fontWeight:600,fontSize:13}}>{r.장비명}</span>
+                  <span style={{color:"#0f172a",fontWeight:600,fontSize:13}}>{dispNameByOrigName(r.장비명)}</span>
                   <span style={{color:r.구분==="예약"?"#0284c7":"#2563eb",fontWeight:700,fontSize:13}}>{r.구분==="예약"?"예약":r.장비사용료==="미정"?"미정":`${parseInt(r.장비사용료).toLocaleString()}원`}</span>
                 </div>
                 <div style={{color:"#64748b",fontSize:12}}>
