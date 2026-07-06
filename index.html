@@ -311,7 +311,7 @@ function RecordsQueryPage({onBack}){
                   <span style={{color:r.구분==="예약"?"#0284c7":"#2563eb",fontWeight:700,fontSize:13}}>{r.구분==="예약"?"예약":r.장비사용료==="미정"?"미정":`${parseInt(r.장비사용료).toLocaleString()}원`}</span>
                 </div>
                 <div style={{color:"#64748b",fontSize:12}}>
-                  {(()=>{const sd=fmtDate(r.사용시작일),st=fmtTime(r.시작시간),ed=fmtDate(r.사용종료일),et=fmtTime(r.종료시간),days=r.사용일수;if(sd&&st&&ed&&et) return `${sd} ${st} ~ ${ed} ${et}${days?" ("+days+"일)":""}`;if(sd&&st) return `${sd} ${st} ~`;if(st&&et) return `${st} ~ ${et}`;return "";})()}
+                  {(()=>{const sd=fmtDate(r.사용시작일),st=fmtTime(r.시작시간),ed=fmtDate(r.사용종료일),et=fmtTime(r.종료시간),days=r.사용일수;if(r.구분==="예약") return sd&&ed?`${sd} ~ ${ed}${days?" ("+days+"일)":""}`:"";if(sd&&st&&ed&&et) return `${sd} ${st} ~ ${ed} ${et}${days?" ("+days+"일)":""}`;if(sd&&st) return `${sd} ${st} ~`;if(st&&et) return `${st} ~ ${et}`;return "";})()}
                 </div>
                 {r.사용량&&<div style={{color:"#94a3b8",fontSize:11,marginTop:2}}>사용량: {r.사용량}</div>}
               </div>
