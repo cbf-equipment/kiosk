@@ -612,6 +612,7 @@ function App(){
                 {last.결제방법&&<Row l="결제 방법" v={last.결제방법}/>}
                 <Row l="장비 수수료(부가세 포함)" v={typeof last.수수료==="number"?`${last.수수료.toLocaleString()}원`:"미정"} highlight/>
               </div>
+              <InfoBox msg={"※ 표시된 단가는 입주기업 기준입니다.\n외부기업은 단가가 다를 수 있으니 이용 전 담당자에게 문의해주세요."}/>
               <button onClick={reset} style={{width:"100%",padding:13,background:"#2563eb",color:"#fff",border:"none",borderRadius:10,fontSize:14,fontWeight:600,cursor:"pointer"}}>처음으로</button>
             </div>
           )}
