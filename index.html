@@ -12,6 +12,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
 select, input { -webkit-appearance: none; appearance: none; }
+input[type=checkbox], input[type=radio] { -webkit-appearance: auto; appearance: auto; width: 16px; height: 16px; flex-shrink: 0; }
 input[type=time]::-webkit-calendar-picker-indicator,
 input[type=date]::-webkit-calendar-picker-indicator { opacity: 0.6; cursor: pointer; }
 ::-webkit-scrollbar { width: 4px; }
@@ -341,6 +342,9 @@ function App(){
   const [openLoading,setOpenLoading]=React.useState(false);
   const [openSearched,setOpenSearched]=React.useState(false);
   const [selectedOpen,setSelectedOpen]=React.useState(null);
+  const [paymentMethod,setPaymentMethod]=React.useState("");
+  const [isExternal,setIsExternal]=React.useState(false);
+  const [taxEmail,setTaxEmail]=React.useState("");
   const [records,setRecords]=React.useState([]);
   const [submitting,setSubmitting]=React.useState(false);
 
@@ -365,6 +369,14 @@ function App(){
   const lgValid = endOnly
     ? !!(selectedOpen && eDate && eTime && !closeEndBeforeStart())
     : !!(cu && wo && eq && sDate && sTime && !lgEndBeforeStart());
+  // 결제 방법: 수수료가 확정되는 순간 + 외부기업 체크 시에만 선택 요구
+  const paymentLabel = paymentMethod==="card"?"카드결제":paymentMethod==="tax"?"세금계산서":"";
+  const feeKnown = eq
+    ? (eq.type==="short"
+        ? true
+        : (endOnly ? true : !!(eDate&&eTime)))
+    : false;
+  const paymentValid = !feeKnown || !isExternal || (paymentMethod==="card" || (paymentMethod==="tax" && taxEmail.trim().length>0));
   const filtered=EQUIPMENT.filter(e=>!eqSearch||e.name.includes(eqSearch)||dispName(e).includes(eqSearch));
   const last=records[records.length-1];
 
@@ -374,8 +386,8 @@ function App(){
     try{await fetch(SCRIPT_URL+"?"+new URLSearchParams(record).toString(),{method:"GET",mode:"no-cors"});}catch(e){}
     setSubmitting(false); setStep("done");
   };
-  const submitShort=()=>post({연도:new Date().getFullYear(),날짜:new Date().toLocaleDateString("ko-KR"),업체명:companyForSubmit(cu),담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작일:todayStr(),사용시작시간:sST,사용종료일:todayStr(),사용종료시간:eST,사용시간_분:shMins(),사용량_L:isL?qty:"",단가:eq.fee,수수료:shFee(),구분:"이용"});
-  const submitLong=()=>post({연도:new Date(sDate).getFullYear(),날짜:new Date(sDate).toLocaleDateString("ko-KR"),업체명:companyForSubmit(cu),담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작일:sDate,사용시작시간:sTime,사용종료일:eDate||"미정",사용종료시간:eTime||"미정",사용시간_분:(eDate&&eTime)?lgMins():"미정",단가:eq.fee,수수료:(eDate&&eTime)?lgFee():"미정",구분:"이용"});
+  const submitShort=()=>post({연도:new Date().getFullYear(),날짜:new Date().toLocaleDateString("ko-KR"),업체명:companyForSubmit(cu),담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작일:todayStr(),사용시작시간:sST,사용종료일:todayStr(),사용종료시간:eST,사용시간_분:shMins(),사용량_L:isL?qty:"",단가:eq.fee,수수료:shFee(),구분:"이용",외부기업:isExternal?"Y":"",결제방법:isExternal?paymentLabel:"",이메일:(isExternal&&paymentMethod==="tax")?taxEmail:""});
+  const submitLong=()=>post({연도:new Date(sDate).getFullYear(),날짜:new Date(sDate).toLocaleDateString("ko-KR"),업체명:companyForSubmit(cu),담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작일:sDate,사용시작시간:sTime,사용종료일:eDate||"미정",사용종료시간:eTime||"미정",사용시간_분:(eDate&&eTime)?lgMins():"미정",단가:eq.fee,수수료:(eDate&&eTime)?lgFee():"미정",구분:"이용",외부기업:(eDate&&eTime&&isExternal)?"Y":"",결제방법:(eDate&&eTime&&isExternal)?paymentLabel:"",이메일:(eDate&&eTime&&isExternal&&paymentMethod==="tax")?taxEmail:""});
 
   // 방법 B: 진행중인(종료일 미정) 이용 건 검색
   const searchOpenRecords=()=>{
@@ -389,8 +401,8 @@ function App(){
     document.body.appendChild(s);
   };
   // 방법 B: 선택한 기존 행을 찾아 종료 정보로 업데이트 (새 행 추가 X)
-  const submitClose=()=>post({action:"closeRecord",rowIndex:selectedOpen.rowIndex,업체명:selectedOpen.업체명,장비명:selectedOpen.장비명,장비코드:eq.code,사용종료일:eDate,종료시간:eTime,사용일수:closeDays(),수수료:closeFee(),구분:"이용"});
-  const reset=()=>{setStep("home");setEq(null);setEqSearch("");setCu("");setWo("");setPh("");setSST("");setEST("");setQty("");setSDate(todayStr());setSTime("");setEDate("");setETime("");setEndOnly(false);setSubmitting(false);setCloseCompany("");setOpenRecords([]);setOpenLoading(false);setOpenSearched(false);setSelectedOpen(null);};
+  const submitClose=()=>post({action:"closeRecord",rowIndex:selectedOpen.rowIndex,업체명:selectedOpen.업체명,장비명:selectedOpen.장비명,장비코드:eq.code,사용종료일:eDate,종료시간:eTime,사용일수:closeDays(),수수료:closeFee(),구분:"이용",외부기업:isExternal?"Y":"",결제방법:isExternal?paymentLabel:"",이메일:(isExternal&&paymentMethod==="tax")?taxEmail:""});
+  const reset=()=>{setStep("home");setEq(null);setEqSearch("");setCu("");setWo("");setPh("");setSST("");setEST("");setQty("");setSDate(todayStr());setSTime("");setEDate("");setETime("");setEndOnly(false);setSubmitting(false);setCloseCompany("");setOpenRecords([]);setOpenLoading(false);setOpenSearched(false);setSelectedOpen(null);setPaymentMethod("");setTaxEmail("");setIsExternal(false);};
 
   return(
     <div style={{minHeight:"100vh",background:"#f0f4f8",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:16}}>
@@ -566,7 +578,25 @@ function App(){
                   <Div/><Row l="장비 수수료(부가세 포함)" v={`${closeFee().toLocaleString()}원`} highlight/>
                 </>}
               </div>
-              <div style={{display:"flex",gap:8}}><GBtn label="← 수정" onClick={()=>setStep("form")}/><PBtn green label={submitting?"저장 중...":"제출하기 ✓"} onClick={eq.type==="short"?submitShort:(endOnly?submitClose:submitLong)} disabled={submitting}/></div>
+              {feeKnown&&<div style={{background:"#f8fafc",borderRadius:12,padding:"14px 16px",border:"1px solid #e2e8f0",marginBottom:16}}>
+                <label style={{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"#0f172a",fontWeight:600,cursor:"pointer",marginBottom:isExternal?12:0}}>
+                  <input type="checkbox" checked={isExternal} onChange={e=>{setIsExternal(e.target.checked);if(!e.target.checked){setPaymentMethod("");setTaxEmail("");}}}/> 외부기업일 경우 선택해주세요
+                </label>
+                {isExternal&&<>
+                  <Div/>
+                  <div style={{fontSize:12,color:"#334155",fontWeight:600,margin:"10px 0"}}>본 이용료는 익월 정산됩니다. 결제 방식을 선택해주세요.</div>
+                  <div style={{display:"flex",gap:16,marginBottom:paymentMethod==="tax"?12:0}}>
+                    <label style={{display:"flex",alignItems:"center",gap:6,fontSize:13,color:"#0f172a",cursor:"pointer"}}>
+                      <input type="radio" name="paymentMethod" checked={paymentMethod==="card"} onChange={()=>setPaymentMethod("card")}/> 카드결제 (방문 결제)
+                    </label>
+                    <label style={{display:"flex",alignItems:"center",gap:6,fontSize:13,color:"#0f172a",cursor:"pointer"}}>
+                      <input type="radio" name="paymentMethod" checked={paymentMethod==="tax"} onChange={()=>setPaymentMethod("tax")}/> 세금계산서 (이메일 발송)
+                    </label>
+                  </div>
+                  {paymentMethod==="tax"&&<input type="email" value={taxEmail} onChange={e=>setTaxEmail(e.target.value)} placeholder="계산서 받으실 이메일 주소" style={{...IS,marginBottom:0}}/>}
+                </>}
+              </div>}
+              <div style={{display:"flex",gap:8}}><GBtn label="← 수정" onClick={()=>setStep("form")}/><PBtn green label={submitting?"저장 중...":"제출하기 ✓"} onClick={eq.type==="short"?submitShort:(endOnly?submitClose:submitLong)} disabled={submitting||!paymentValid}/></div>
             </div>
           )}
 
@@ -579,6 +609,7 @@ function App(){
               <div style={{color:"#64748b",fontSize:13,marginBottom:24}}>이용 기록이 안전하게 저장되었습니다</div>
               <div style={{background:"#f8fafc",borderRadius:12,padding:16,marginBottom:20,textAlign:"left",border:"1px solid #e2e8f0"}}>
                 <Row l="업체명" v={last.업체명}/><Row l="장비명" v={dispNameByCode(last.장비코드)||last.장비명}/>
+                {last.결제방법&&<Row l="결제 방법" v={last.결제방법}/>}
                 <Row l="장비 수수료(부가세 포함)" v={typeof last.수수료==="number"?`${last.수수료.toLocaleString()}원`:"미정"} highlight/>
               </div>
               <button onClick={reset} style={{width:"100%",padding:13,background:"#2563eb",color:"#fff",border:"none",borderRadius:10,fontSize:14,fontWeight:600,cursor:"pointer"}}>처음으로</button>
