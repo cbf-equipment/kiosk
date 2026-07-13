@@ -497,12 +497,12 @@ function App(){
 
               {!endOnly&&(<>
                 <CompanyWorker cu={cu} setCu={setCu} wo={wo} setWo={setWo} ph={ph} setPh={setPh}/>
-                <InfoBox msg={"📌 장기 사용 장비입니다.\n시작 날짜/시간은 반드시 입력해주세요.\n종료일 미입력 시 '미정'으로 저장되며, 사용이 끝나면 \"사용 종료 기록\"에서 이어서 마무리하시면 됩니다."}/>
+                <InfoBox msg={<>📌 장기 사용 장비입니다.<br/>시작 날짜/시간은 반드시 입력해주세요.<br/><b>종료일 미입력 시 '미정'으로 저장되며, 사용이 끝나면 "사용 종료 기록"에서 이어서 마무리하시면 됩니다.</b></>}/>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
                   <div><Lbl>시작 날짜 <span style={{color:"#ef4444"}}>*</span></Lbl><input type="date" value={sDate} onChange={e=>setSDate(e.target.value)} style={{...IS,marginBottom:0}}/><div style={{marginBottom:14}}/></div>
                   <div><Lbl>시작 시간 <span style={{color:"#ef4444"}}>*</span></Lbl><div style={{display:"flex",gap:6}}><input type="time" value={sTime} onChange={e=>setSTime(e.target.value)} style={{...IS,marginBottom:0,flex:1}}/><NowBtn onClick={()=>setSTime(nowStr())}/></div></div>
-                  <div><Lbl>종료 날짜 <span style={{color:"#94a3b8"}}>(아는 경우만)</span></Lbl><input type="date" value={eDate} onChange={e=>setEDate(e.target.value)} style={{...IS,marginBottom:0}}/><div style={{marginBottom:14}}/></div>
-                  <div><Lbl>종료 시간 <span style={{color:"#94a3b8"}}>(아는 경우만)</span></Lbl><div style={{display:"flex",gap:6}}><input type="time" value={eTime} onChange={e=>setETime(e.target.value)} style={{...IS,marginBottom:0,flex:1}}/><NowBtn onClick={()=>setETime(nowStr())}/></div></div>
+                  <div><Lbl>종료 날짜 <span style={{color:"#94a3b8"}}>(선택)</span></Lbl><input type="date" value={eDate} onChange={e=>setEDate(e.target.value)} style={{...IS,marginBottom:0}}/><div style={{marginBottom:14}}/></div>
+                  <div><Lbl>종료 시간 <span style={{color:"#94a3b8"}}>(선택)</span></Lbl><div style={{display:"flex",gap:6}}><input type="time" value={eTime} onChange={e=>setETime(e.target.value)} style={{...IS,marginBottom:0,flex:1}}/><NowBtn onClick={()=>setETime(nowStr())}/></div></div>
                 </div>
                 {lgEndBeforeStart()&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:10,padding:"10px 14px",marginBottom:14,color:"#dc2626",fontSize:12,fontWeight:600}}>⚠ 종료 시간이 시작 시간보다 빠릅니다. 날짜·시간을 다시 확인해주세요.</div>}
                 {lgValid&&<div style={{background:"#f8fafc",borderRadius:12,padding:"14px 16px",border:"1px solid #e2e8f0",marginBottom:0}}>
